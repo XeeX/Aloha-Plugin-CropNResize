@@ -87,13 +87,34 @@ GENTICS.Aloha.CropNResize.attachedObjects = [];
 GENTICS.Aloha.CropNResize.init = function() {
 	var that = this;
 	
+	if (!this.settings.load) {
+		this.settings.load = [];
+	}
+	
 	// load additional js libs
-	jQuery('head').append(
-		'<script type="text/javascript" src="' + GENTICS.Aloha.settings.base + 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery-ui-1.8.7.custom.min.js"></script>' + 
-		'<link rel="stylesheet" href="' + GENTICS.Aloha.settings.base + 'plugins/com.gentics.aloha.plugins.CropNResize/css/ui-lightness/jquery-ui-1.8.7.custom.css" />' + 
-		'<script type="text/javascript" src="' + GENTICS.Aloha.settings.base + 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery.Jcrop.min.js"></script>' + 
-		'<link rel="stylesheet" href="' + GENTICS.Aloha.settings.base + 'plugins/com.gentics.aloha.plugins.CropNResize/css/jquery.Jcrop.css" />' +
-		'<link rel="stylesheet" href="' + GENTICS.Aloha.settings.base + 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
+	if (this.settings.load.jqueryui !== false && this.settings.load.jqueryui !== 'false') {
+		jQuery('head').append('<script type="text/javascript" src="' 
+				+ GENTICS.Aloha.settings.base 
+				+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery-ui-1.8.7.custom.min.js"></script>');
+	}
+	if (this.settings.load.jqueryuicss !== false && this.settings.load.jqueryuicss !== 'false') {
+		jQuery('head').append('<link rel="stylesheet" href="' 
+				+ GENTICS.Aloha.settings.base 
+				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/ui-lightness/jquery-ui-1.8.7.custom.css" />');
+	}
+	if (this.settings.load.jcrop !== false && this.settings.load.jcrop !== 'false') {
+		jQuery('head').append('<script type="text/javascript" src="' 
+				+ GENTICS.Aloha.settings.base 
+				+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery.Jcrop.min.js"></script>');
+	}
+	if (this.settings.load.jcropcss !== false && this.settings.load.jcropcss !== 'false') {
+		jQuery('head').append('<link rel="stylesheet" href="' 
+				+ GENTICS.Aloha.settings.base 
+				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/jquery.Jcrop.css" />');
+	}
+	jQuery('head').append('<link rel="stylesheet" href="' 
+			+ GENTICS.Aloha.settings.base 
+			+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
 	
 	// create image scope
 	GENTICS.Aloha.FloatingMenu.createScope('GENTICS.Aloha.image', ['GENTICS.Aloha.global']);
