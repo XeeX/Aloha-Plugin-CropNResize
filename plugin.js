@@ -12,7 +12,7 @@ GENTICS.Aloha.CropNResize = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.CropNResize.languages = ['en', 'de'];
+GENTICS.Aloha.CropNResize.languages = ['en', 'de', 'fr'];
 
 /**
  * The image that is currently edited
