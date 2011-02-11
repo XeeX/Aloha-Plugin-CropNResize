@@ -411,7 +411,11 @@ GENTICS.Aloha.CropNResize.focus = function (e) {
 		width : this.obj.width(),
 		height : this.obj.height()
 	});
-	this.resize(); // init resizing by default
+	
+	
+	if (jQuery.browser.webkit) {
+		this.resize(); // init resizing by default
+	}
 	this.updateFM();
 };
 
