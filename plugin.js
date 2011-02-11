@@ -283,6 +283,13 @@ GENTICS.Aloha.CropNResize.attach = function(selector) {
 		}
 	});
 	
+	try {
+		// this will disable mozillas image resizing facilities
+		document.execCommand('enableObjectResizing', false, 'false');
+	} catch (e) {
+		// this is just for internet explorer, who will not support disabling enableObjectResizing
+	}
+	
 };
 
 /**
