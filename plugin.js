@@ -50,6 +50,16 @@ GENTICS.Aloha.CropNResize.restoreProps = [];
 GENTICS.Aloha.CropNResize.onResized = function (image) {};
 
 /**
+ * active or not the resize
+ */
+GENTICS.Aloha.CropNResize.allowResize = true;
+
+/**
+ * active or not the cropping
+ */
+GENTICS.Aloha.CropNResize.allowCrop = true;
+
+/**
  * crop callback is triggered after the user clicked accept to accept his crop
  * @param image jquery image object reference
  * @param props cropping properties
@@ -91,119 +101,146 @@ GENTICS.Aloha.CropNResize.init = function() {
 		this.settings.load = [];
 	}
 	
-	// load additional js libs
-	if (this.settings.load.jqueryui !== false && this.settings.load.jqueryui !== 'false') {
-		jQuery('head').append('<script type="text/javascript" src="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery-ui-1.8.7.custom.min.js"></script>');
+	if (typeof this.settings.allowResize == "boolean") {
+		this.allowResize = this.settings.allowResize;
 	}
-	if (this.settings.load.jqueryuicss !== false && this.settings.load.jqueryuicss !== 'false') {
-		jQuery('head').append('<link rel="stylesheet" href="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/ui-lightness/jquery-ui-1.8.7.custom.css" />');
-	}
-	if (this.settings.load.jcrop !== false && this.settings.load.jcrop !== 'false') {
-		jQuery('head').append('<script type="text/javascript" src="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery.Jcrop.min.js"></script>');
-	}
-	if (this.settings.load.jcropcss !== false && this.settings.load.jcropcss !== 'false') {
-		jQuery('head').append('<link rel="stylesheet" href="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/jquery.Jcrop.css" />');
-	}
-	jQuery('head').append('<link rel="stylesheet" href="' 
-			+ GENTICS.Aloha.settings.base 
-			+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
-	
-	// create image scope
-	GENTICS.Aloha.FloatingMenu.createScope('GENTICS.Aloha.image', ['GENTICS.Aloha.global']);
-	
-	/*
-	 * init basic settings like callbacks and options
-	 */
-	if (typeof this.settings.onResized == "function") {
-		this.onResized = this.settings.onResized;
-	}
-	if (typeof this.settings.onCropped == "function") {
-		this.onCropped = this.settings.onCropped;
-	}
-	if (typeof this.settings.onReset == "function") {
-		this.onReset = this.settings.onReset;
-	}
-	if (typeof this.settings.aspectRatio != "boolean") {
-		this.settings.aspectRatio = true;
+	if (!jQuery.browser.webkit) {
+		this.allowResize = false;
 	}
 	
-	// init attach selectors
-	// initialize the root selector used for attach()
-	if (typeof this.settings.rootSelector !== 'string') {
-		this.settings.rootSelector = '.GENTICS_editable';
+	if (typeof this.settings.allowCrop == "boolean") {
+		this.allowCrop = this.settings.allowCrop;
 	}
 	
-	// ...and the standard selector
-	if (typeof this.settings.selector !== 'string') {
-		this.settings.selector = 'img';
-	}
-	
-	/*
-	 * image cropping stuff goes here
-	 */
-	this.cropButton = new GENTICS.Aloha.ui.Button({
-		'size' : 'small',
-		'tooltip' : this.i18n('Crop'),
-		'toggle' : true,
-		'iconClass' : 'cnr_crop',
-		'onclick' : function (btn, event) {
-			if (btn.pressed) {
-				that.crop();
-			} else {
-				that.endCrop();
+	if(this.allowCrop || this.allowResize)
+	{
+		if(this.allowResize)
+		{
+			// load additional js libs
+			if (this.settings.load.jqueryui !== false && this.settings.load.jqueryui !== 'false') {
+				jQuery('head').append('<script type="text/javascript" src="' 
+						+ GENTICS.Aloha.settings.base 
+						+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery-ui-1.8.7.custom.min.js"></script>');
+			}
+			if (this.settings.load.jqueryuicss !== false && this.settings.load.jqueryuicss !== 'false') {
+				jQuery('head').append('<link rel="stylesheet" href="' 
+						+ GENTICS.Aloha.settings.base 
+						+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/ui-lightness/jquery-ui-1.8.7.custom.css" />');
 			}
 		}
-	});
-
-	// add to floating menu
-	GENTICS.Aloha.FloatingMenu.addButton(
-		'GENTICS.Aloha.image',
-		this.cropButton,
-		this.i18n('floatingmenu.tab.image'),
-		20
-	);
-	
-	/*
-	 * add a reset button
-	 */
-	GENTICS.Aloha.FloatingMenu.addButton(
-		'GENTICS.Aloha.image',
-		new GENTICS.Aloha.ui.Button({
-			'size' : 'small',
-			'tooltip' : this.i18n('Reset'),
-			'toggle' : false,
-			'iconClass' : 'cnr_reset',
-			'onclick' : function (btn, event) {
-				that.reset();
+		
+		if(this.allowCrop)
+		{
+			if (this.settings.load.jcrop !== false && this.settings.load.jcrop !== 'false') {
+				jQuery('head').append('<script type="text/javascript" src="' 
+						+ GENTICS.Aloha.settings.base 
+						+ 'plugins/com.gentics.aloha.plugins.CropNResize/js/jquery.Jcrop.min.js"></script>');
 			}
-		}),
-		this.i18n('floatingmenu.tab.image'),
-		30
-	);
+			if (this.settings.load.jcropcss !== false && this.settings.load.jcropcss !== 'false') {
+				jQuery('head').append('<link rel="stylesheet" href="' 
+						+ GENTICS.Aloha.settings.base 
+						+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/jquery.Jcrop.css" />');
+			}
+		}
+		jQuery('head').append('<link rel="stylesheet" href="' 
+				+ GENTICS.Aloha.settings.base 
+				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
+		
+		// create image scope
+		GENTICS.Aloha.FloatingMenu.createScope('GENTICS.Aloha.image', ['GENTICS.Aloha.global']);
+		
+		/*
+		 * init basic settings like callbacks and options
+		 */
+		if (typeof this.settings.onResized == "function") {
+			this.onResized = this.settings.onResized;
+		}
+		if (typeof this.settings.onCropped == "function") {
+			this.onCropped = this.settings.onCropped;
+		}
+		if (typeof this.settings.onReset == "function") {
+			this.onReset = this.settings.onReset;
+		}
+		if (typeof this.settings.aspectRatio != "boolean") {
+			this.settings.aspectRatio = true;
+		}
+		
+		// init attach selectors
+		// initialize the root selector used for attach()
+		if (typeof this.settings.rootSelector !== 'string') {
+			this.settings.rootSelector = '.GENTICS_editable';
+		}
+		
+		// ...and the standard selector
+		if (typeof this.settings.selector !== 'string') {
+			this.settings.selector = 'img';
+		}
+		
+		if(this.allowCrop)
+		{
+			/*
+			 * image cropping stuff goes here
+			 */
+			this.cropButton = new GENTICS.Aloha.ui.Button({
+				'size' : 'small',
+				'tooltip' : this.i18n('Crop'),
+				'toggle' : true,
+				'iconClass' : 'cnr_crop',
+				'onclick' : function (btn, event) {
+					if (btn.pressed) {
+						that.crop();
+					} else {
+						that.endCrop();
+					}
+				}
+			});
+		
+			// add to floating menu
+			GENTICS.Aloha.FloatingMenu.addButton(
+				'GENTICS.Aloha.image',
+				this.cropButton,
+				this.i18n('floatingmenu.tab.image'),
+				20
+			);
+		}
 	
-	// remove resize handles and cropping status when clicking somewhere else
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
-		if (!originalEvent || !originalEvent.target) {
-			return;
-		}
-		if (!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
-			that.endResize();
-		}
-	});
-
-	// now attach events to images
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
-		// attach events to the editable
-		that.attach();
-	});
+		/*
+		 * add a reset button
+		 */
+		GENTICS.Aloha.FloatingMenu.addButton(
+			'GENTICS.Aloha.image',
+			new GENTICS.Aloha.ui.Button({
+				'size' : 'small',
+				'tooltip' : this.i18n('Reset'),
+				'toggle' : false,
+				'iconClass' : 'cnr_reset',
+				'onclick' : function (btn, event) {
+					that.reset();
+				}
+			}),
+			this.i18n('floatingmenu.tab.image'),
+			30
+		);
+		
+		// remove resize handles and cropping status when clicking somewhere else
+		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
+			if (!originalEvent || !originalEvent.target) {
+				return;
+			}
+			if (!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+				if(that.allowResize)
+				{
+					that.endResize();
+				}
+			}
+		});
+	
+		// now attach events to images
+		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+			// attach events to the editable
+			that.attach();
+		});
+	}
 };
 
 /**
@@ -263,18 +300,17 @@ GENTICS.Aloha.CropNResize.isAttached = function(domobj) {
 };
 
 /**
- * execute cleanup routine
- */
-GENTICS.Aloha.CropNResize.reset = function() {
-	// TODO implement me
-};
-
-/**
  * resets the image to it's initial properties
  */
 GENTICS.Aloha.CropNResize.reset = function() {
-	this.endCrop();
-	this.endResize();
+	if(this.allowCrop)
+	{
+		this.endCrop();
+	}
+	if(this.allowResize)
+	{
+		this.endResize();
+	}
 	
 	if (this.onReset(this.obj)) {
 		// the external reset procedure has already performed a reset, so there is no need to apply an internal reset
@@ -290,7 +326,7 @@ GENTICS.Aloha.CropNResize.reset = function() {
 			return;
 		}
 	}
-}
+};
 
 /**
  * initialize crop confirm and cancel buttons and move them to the tracker position
@@ -343,7 +379,10 @@ GENTICS.Aloha.CropNResize.destroyCropButtons = function () {
 GENTICS.Aloha.CropNResize.crop = function () {
 	var that = this;
 	
-	this.endResize();
+	if(this.allowResize)
+	{
+		this.endResize();
+	}
 	this.initCropButtons();
 
 	this.jcAPI = jQuery.Jcrop(this.obj, {
@@ -368,7 +407,10 @@ GENTICS.Aloha.CropNResize.endCrop = function () {
 	
 	this.destroyCropButtons();
 	this.cropButton.extButton.toggle(false);
-	this.resize();
+	if(this.allowResize)
+	{
+		this.resize();
+	}
 };
 
 /**
@@ -388,7 +430,10 @@ __proto__: Object
 	 */
 	this.onCropped(this.obj, this.jcAPI.tellSelect());
 	this.endCrop();
-	this.resize();
+	if(this.allowResize)
+	{
+		this.resize();
+	}
 };
 /**
  * start resizing
@@ -448,7 +493,7 @@ GENTICS.Aloha.CropNResize.focus = function (e) {
 	});
 	
 	
-	if (jQuery.browser.webkit) {
+	if (this.allowResize) {
 		this.resize(); // init resizing by default
 	}
 	this.updateFM();
