@@ -135,6 +135,17 @@ GENTICS.Aloha.CropNResize.init = function() {
 		this.settings.aspectRatio = true;
 	}
 	
+	// init attach selectors
+	// initialize the root selector used for attach()
+	if (typeof this.settings.rootSelector !== 'string') {
+		this.settings.rootSelector = '.GENTICS_editable';
+	}
+	
+	// ...and the standard selector
+	if (typeof this.settings.selector !== 'string') {
+		this.settings.selector = 'img';
+	}
+	
 	/*
 	 * image cropping stuff goes here
 	 */
@@ -180,6 +191,9 @@ GENTICS.Aloha.CropNResize.init = function() {
 	
 	// remove resize handles and cropping status when clicking somewhere else
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
+		if (!originalEvent || !originalEvent.target) {
+			return;
+		}
 		if (!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 			that.endResize();
 		}
@@ -207,24 +221,24 @@ GENTICS.Aloha.CropNResize.init = function() {
 GENTICS.Aloha.CropNResize.attach = function(selector) {
 	// if a selector has been provided we'll stick with this one
 	if (typeof selector != 'string') {
-		// check config for another default selector
-		if (typeof this.settings.selector == 'string') {
-			selector = this.settings.selector;
-		} else {
-			// use default selector
-			selector = '.GENTICS_editable img';
-		}
+		selector = this.settings.selector;
 	}
 
 	var that = this;
+	var attachSelector = this.settings.rootSelector
+		+ ' '
+		+ selector;
+	
 	// now attach to objects matched by the selector
-	jQuery(selector).each(function() {
+	jQuery(attachSelector).each(function() {
 		if (!that.isAttached(this)) {
 			var o = jQuery(this);
-			// we don't want to resize edit icons
+
+			// we never want to resize edit icons
 			if (o.parent().hasClass('GENTICS_editicon')) {
 				return true;
 			}
+			
 			o.mouseup(function(e) {
 				that.focus(e);
 				e.stopPropagation();
